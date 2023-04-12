@@ -1,0 +1,60 @@
+﻿@page
+@model WebApplication2603.Pages.days.editModel
+@{
+}
+<br />
+<input type="hidden" name="id_b" value="@Model.id" />
+<h2>Edit day</h2>
+
+<form method="POST">
+    <div class="row mb-3">
+        <label class="col-sm-3 col-form-label">Date</label>
+        <div class="col-sm-6">
+            <input type="date" class="form-control" name="date" value="@Model.new_day.Date"/>
+        </div>
+
+    </div>
+    <div class="row mb-3">
+        <input type="hidden" name="id" value="@Model.id" />
+        <label class="col-sm-3 col-form-label">Note</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" name="note" value="@Model.new_day.Note"/>
+        </div>
+
+    </div>
+    <br />
+    <div>
+        
+    </div>
+    <h2>Habits </h2>
+    @{
+        for (int i = 0; i < Model.habits_value_list.Count; i++)
+        {
+            var item = Model.habits_value_list[i];
+            string name_i = "value" + i;
+            <div class="row mb-3">
+                
+                <label class="col-sm-3 col-form-label"></label>
+                <div class="col-sm-6">
+                    <p>@item.name :</p>
+                    <input type="text" class="form-control" name="@name_i" value="@item.value"/>
+                </div>
+
+            </div>
+
+        }
+    }
+
+
+    <div class="row mb-3">
+        <div class="offset-sm-3 col-sm-3 d-grid">
+            <button type="submit" class="btn btn-primary"> Submit</button>
+        </div>
+        <div class="col-sm-3 d-grid">
+            <a class="btn btn-outline-danger" href="/" role="button"> Cancel</a> 
+        </div>
+    </div>
+
+
+
+</form>

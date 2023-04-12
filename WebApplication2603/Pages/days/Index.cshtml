@@ -1,0 +1,73 @@
+﻿@page
+@model WebApplication2603.Pages.days.IndexModel
+@{
+}
+<br />
+
+<a class="btn btn-primary" href="/days/create">New day </a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>id</th>
+            <th>date</th>
+            <th>note</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            foreach (var item in Model.Days)
+            {
+                <tr>
+                        @{
+                            string havenote = "filled";
+                            if (item.Note==null||item.Note=="")
+                            {
+                                havenote = "empty";
+                            }
+                        }
+                    <td>@item.id</td>
+                    <td>@item.Date</td>
+                    <td>@havenote</td>
+                    <td>
+                        <input type="hidden" name="id" value="@item.id">
+                        <a class="btn btn-primary btn-sm" href="/days/edit?id=@item.id">Edit</a>
+                        <a class="btn btn-primary btn-sm" href="/days/delete?id=@item.id">Delete</a>
+                    </td>
+                </tr>
+            
+        }}
+        
+
+    </tbody>
+</table>
+<br>
+<a class="btn btn-primary" href="/days/createhabit">New habit </a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>name</th>
+            <th>habit type</th>
+            
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            foreach (var item in Model.habits)
+            {
+                <tr>
+                   
+                    <td>@item.name</td>
+                    <td>@item.type</td>
+                    <td>
+                        <input type="hidden" name="id" value="@item.id">
+                        <a class="btn btn-primary btn-sm" href="/days/delete?id=@item.id">Delete</a>
+                    </td>
+                </tr>
+
+            }
+        }
+
+
+    </tbody>
+</table>

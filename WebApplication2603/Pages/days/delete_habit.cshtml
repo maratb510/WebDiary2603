@@ -1,0 +1,26 @@
+﻿@page
+@model WebApplication2603.Pages.days.deleteModel
+@using System.Data.SqlClient
+@{
+    try
+    {
+        string id = Request.Query["id"];
+        string connectionstring = "Data Source=.\\sqlexpress;Initial Catalog=diary;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+        using (SqlConnection connection = new SqlConnection(connectionstring))
+        {
+            connection.Open();
+            String sql = "DELETE FROM Habits WHERE ID=@id";
+            using (SqlCommand command = new SqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue("@id", id);
+
+                command.ExecuteNonQuery();
+            }
+        }
+    }
+    catch (Exception)
+    {
+        
+        throw;
+    }
+}
