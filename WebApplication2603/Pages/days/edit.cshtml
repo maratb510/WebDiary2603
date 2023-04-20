@@ -3,7 +3,17 @@
 @{
 }
 <br />
-<input type="hidden" name="id_b" value="@Model.id" />
+@{
+    try
+    {
+        <input type="hidden" name="id_b" value="@Model.id" />
+    }
+    catch
+    {
+        
+    }
+}
+
 <h2>Edit day</h2>
 
 <form method="POST">
@@ -28,21 +38,74 @@
     </div>
     <h2>Habits </h2>
     @{
-        for (int i = 0; i < Model.habits_value_list.Count; i++)
+        try
         {
-            var item = Model.habits_value_list[i];
-            string name_i = "value" + i;
-            <div class="row mb-3">
-                
-                <label class="col-sm-3 col-form-label"></label>
-                <div class="col-sm-6">
-                    <p>@item.name :</p>
-                    <input type="text" class="form-control" name="@name_i" value="@item.value"/>
+            for (int i = 0; i < Model.habits_value_list.Count; i++)
+            {
+
+                var item = Model.habits_value_list[i];
+
+
+
+                string name_i = "value" + i;
+                string name_ch = name_i + "ch";
+                <div class="row mb-3">
+
+                    <label class="col-sm-3 col-form-label">@item.name</label>
+                    <div class="col-sm-6">
+                        @{
+                            string type = Model.habit_types[item.id];
+                            string input_type = "text";
+                            switch (type)
+                            {
+
+
+                                case "number":
+                                    input_type = "number";
+                                    break;
+                                case "checkbox":
+                                    input_type = "hidden";
+                                    break;
+                            }
+                        }
+                        @{
+                            string value = item.value;
+                            string hidden = "hidden";
+                            if (type == "checkbox")
+                            {
+                                hidden = "checkbox";
+
+                                if (value == "on")
+                                {
+                                    <input name="AreChecked" type="checkbox" value="@i" checked />
+                                }
+                                else
+                                {
+                                    <input name="AreChecked" type="checkbox" value="@i" />
+                                }
+                                value = "inputcheckbox" + i;
+                            }
+                            else
+                            {
+                                <input name="AreChecked" type="hidden" value="@i" />
+                            }
+                        }
+                        <p>@item.name :</p>
+                        <input   type="@input_type"  name="@name_i" value="@value"/>
+
+
+
+
+                    </div>
+
                 </div>
-
-            </div>
-
+            }
         }
+        catch
+        {
+            
+        }
+
     }
 
 

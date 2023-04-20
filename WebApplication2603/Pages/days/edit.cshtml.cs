@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Data.SqlClient;
 
 namespace WebApplication2603.Pages.days
@@ -10,13 +12,15 @@ namespace WebApplication2603.Pages.days
         public string name;
         public string value;
     }
+    
     public class editModel : PageModel
     {
-        
+        public List<string> checkedids = new List<string>() { };
         public List<habit_value> habits_value_list = new List<habit_value>();
         public List<habit_value> backup;
         public int id;
         public dayinfo new_day = new dayinfo();
+        public Dictionary<int, string> habit_types = new Dictionary<int, string>() { };
         public void OnGet()
         {
             string id = Request.Query["id"];
@@ -75,6 +79,7 @@ namespace WebApplication2603.Pages.days
 
             void UpdatePageHabitsValues(SqlConnection connection)
             {
+                
                 connection.Open();
                 String sql = "SELECT * FROM HabitsValue WHERE habit_date=@date";
                 using (SqlCommand command = new SqlCommand(sql, connection))
@@ -110,14 +115,37 @@ namespace WebApplication2603.Pages.days
 
 
                 }
+                String sql_habit_types = "SELECT * FROM Habits";
+                using (SqlCommand command = new SqlCommand(sql_habit_types, connection))
+                {
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            habit newhabit = new habit();
+                            newhabit.id = reader.GetInt32(2);
+                            newhabit.name = reader.GetString(1);
+                            newhabit.type = reader.GetString(0);
+                            habit_types.Add(newhabit.id, newhabit.type);
+
+                        }
+                    }
+
+
+                }
             }
         }
 
         public dayinfo dayinfo = new dayinfo();
+        public string checked_ids;
         public void OnPost()
         {
-            string id = Request.Query["id"];
+            Console.WriteLine(" checked"+Request.Form["AreChecked"]);
 
+            //checkedids = Request.Form["AreChecked"];
+            string id = Request.Query["id"];
+            checked_ids= ","+Request.Form["AreChecked"]+",";
+            Console.WriteLine(checked_ids);
             dayinfo.id = int.Parse(id);
             dayinfo.Date =( Request.Form["date"]);
             Console.WriteLine(dayinfo.Date);
@@ -198,6 +226,7 @@ namespace WebApplication2603.Pages.days
 
                 }
             }
+            
         }
 
         private void UpdateHabitsValues(SqlConnection connection)
@@ -208,10 +237,35 @@ namespace WebApplication2603.Pages.days
             for (int i = 0; i < habits_value_list.Count; i++)
             {
                 int habit_id = habits_value_list[i].id;
-
+                
                 string form_name = "value" + i;
-                string value = Request.Form[form_name];
-                Console.WriteLine("updatedvalue : " + value);
+                string value = Request.Form[form_name].ToString();
+                if (value.Contains("inputcheckbox"))
+                {
+                    var check_id = value[value.Length-1].ToString();
+                    if (checked_ids.Contains((","+ check_id+",")))
+                    {
+                        value= "on";
+
+                    }
+                    else
+                    {
+                        value = "";
+                    }
+                }
+                //Request.Form[form_name];
+                
+                
+                if (value==null)
+                {
+                    value = "";
+                    
+                }
+                else
+                {
+                    
+                }
+                
                 using (SqlCommand command = new SqlCommand(sql_habit_update, connection))
                 {
                     command.Parameters.AddWithValue("@id", habit_id);

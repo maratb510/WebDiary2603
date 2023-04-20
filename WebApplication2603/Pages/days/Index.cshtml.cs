@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System.Data.SqlClient;
+using System.Linq;
 
 namespace WebApplication2603.Pages.days
 {
@@ -10,8 +11,13 @@ namespace WebApplication2603.Pages.days
     {
         public List<dayinfo> Days = new List<dayinfo>() { };
         public List<habit> habits = new List<habit>() { };
+        Dictionary<int, int> completedhabits_key_dayid= new Dictionary<int, int>();
+        public List<habit_value> habits_values= new List<habit_value>() { };
+        public Dictionary<string, List<string>> habitsAtDates=new Dictionary<string, List<string>>() { };
+        public Dictionary<string, int> dictionary_completed_habits;
         public void OnGet()
         {
+            Dictionary<int, int> completedhabits_key_dayid = new Dictionary<int, int>();
             Console.WriteLine("ongetindex");
             try
             {
@@ -31,13 +37,66 @@ namespace WebApplication2603.Pages.days
             }
             try
             {
-
+                
 
                 String connectionString = "Data Source=.\\sqlexpress;Initial Catalog=diary;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
                     StoreHabits(connection);
+                    List<string> habits_;
+                    Dictionary<string, string> habitsAtNames;
+                    foreach (var item in Days)
+                    {
+                        habits_ = new List<string>() { };
+                        habitsAtNames= new Dictionary<string, string>();
+                        var date=item.Date;
+                        String sql = "SELECT * FROM HabitsValue WHERE habit_date=@date";
+                        using (SqlCommand command = new SqlCommand(sql, connection))
+                        {
+                            command.Parameters.AddWithValue("@date", date);
+                            using (SqlDataReader reader = command.ExecuteReader())
+                            {
+
+
+
+                                while (reader.Read())
+
+                                {
+                                    habit_value new_value = new habit_value();
+                                    new_value.id = reader.GetInt32(0);
+                                    new_value.name = reader.GetString(3);
+                                    try
+                                    {
+                                        new_value.value = (reader.GetString(1));
+                                    }
+                                    catch (Exception)
+                                    {
+                                        new_value.value = "";
+                                    }
+
+                                    habits_values.Add(new_value);
+                                    habits_.Add(new_value.value);
+
+                                    
+                                }
+
+                            }
+
+
+                        }
+                        try
+                        {
+                            habitsAtDates.Add(item.Date, habits_);
+                        }
+                        catch (Exception)
+                        {
+
+                            
+                        }
+                        
+                    }
+                    
                 }
             }
             catch (Exception)
@@ -45,6 +104,39 @@ namespace WebApplication2603.Pages.days
 
                 throw;
             }
+            getprogress();
+             void getprogress( )
+            {
+
+                dictionary_completed_habits = new Dictionary<string, int>() { };
+                
+                   
+                    foreach (var item in habitsAtDates)
+                    {
+                        int completed = 0;
+                        foreach (var value in item.Value)
+                            {
+                                if (value != "")
+                                {
+                                    completed++;
+                                }
+                            }
+                        try
+                        {
+                            dictionary_completed_habits.Add((item.Key).ToString(), completed);
+                        }
+                        catch (Exception)
+                        {
+
+                            throw;
+                        }
+
+                    
+                }
+                    
+            }
+
+            
         }
 
         private void StoreDays(SqlConnection connection)
@@ -91,6 +183,20 @@ namespace WebApplication2603.Pages.days
 
             }
         }
+        public int getcompletedhabits(string date)
+        {
+            int return_value;
+            try
+            {
+               return_value= dictionary_completed_habits[date];
+            }
+            catch (Exception)
+            {
+                return_value=0;
+                
+            }
+            return return_value;
+        }
 
     }
     public class dayinfo
@@ -105,5 +211,21 @@ namespace WebApplication2603.Pages.days
         public int id;
         public string name;
         public string type;
+    }
+    public class progresschecker
+    {
+        List<int> ids = new List<int>();
+        public  progresschecker(List<dayinfo> Days)
+        {
+            foreach (var item in Days)
+            {
+                ids.Add(item.id);
+            }
+        }
+        public int getprogress(int dayid,int habitid)
+        {
+
+            return 0;
+        }
     }
 }

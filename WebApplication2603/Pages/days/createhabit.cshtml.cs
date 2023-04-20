@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Data.SqlClient;
 using System.Xml;
 
+
 namespace WebApplication2603.Pages.days
 {
     public class createhabitModel : PageModel
@@ -22,6 +23,7 @@ namespace WebApplication2603.Pages.days
             newhabit newhabit=new newhabit();
             newhabit.name = Request.Form["name"] ;
             newhabit.type = Request.Form["type"];
+            Console.WriteLine(newhabit.type);
             Console.WriteLine(newhabit.name+" "+newhabit.type);
             try
             {
