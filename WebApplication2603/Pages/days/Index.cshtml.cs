@@ -18,7 +18,7 @@ namespace WebApplication2603.Pages.days
         public void OnGet()
         {
             Dictionary<int, int> completedhabits_key_dayid = new Dictionary<int, int>();
-            Console.WriteLine("ongetindex");
+            
             try
             {
 
@@ -44,59 +44,8 @@ namespace WebApplication2603.Pages.days
                 {
                     connection.Open();
                     StoreHabits(connection);
-                    List<string> habits_;
-                    Dictionary<string, string> habitsAtNames;
-                    foreach (var item in Days)
-                    {
-                        habits_ = new List<string>() { };
-                        habitsAtNames= new Dictionary<string, string>();
-                        var date=item.Date;
-                        String sql = "SELECT * FROM HabitsValue WHERE habit_date=@date";
-                        using (SqlCommand command = new SqlCommand(sql, connection))
-                        {
-                            command.Parameters.AddWithValue("@date", date);
-                            using (SqlDataReader reader = command.ExecuteReader())
-                            {
+                    StoreHabitsValues(connection);
 
-
-
-                                while (reader.Read())
-
-                                {
-                                    habit_value new_value = new habit_value();
-                                    new_value.id = reader.GetInt32(0);
-                                    new_value.name = reader.GetString(3);
-                                    try
-                                    {
-                                        new_value.value = (reader.GetString(1));
-                                    }
-                                    catch (Exception)
-                                    {
-                                        new_value.value = "";
-                                    }
-
-                                    habits_values.Add(new_value);
-                                    habits_.Add(new_value.value);
-
-                                    
-                                }
-
-                            }
-
-
-                        }
-                        try
-                        {
-                            habitsAtDates.Add(item.Date, habits_);
-                        }
-                        catch (Exception)
-                        {
-
-                            
-                        }
-                        
-                    }
-                    
                 }
             }
             catch (Exception)
@@ -136,7 +85,62 @@ namespace WebApplication2603.Pages.days
                     
             }
 
-            
+            void StoreHabitsValues(SqlConnection connection)
+            {
+                List<string> habits_;
+                Dictionary<string, string> habitsAtNames;
+                foreach (var item in Days)
+                {
+                    habits_ = new List<string>() { };
+                    habitsAtNames = new Dictionary<string, string>();
+                    var date = item.Date;
+                    String sql = "SELECT * FROM HabitsValue WHERE habit_date=@date";
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        command.Parameters.AddWithValue("@date", date);
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+
+
+
+                            while (reader.Read())
+
+                            {
+                                habit_value new_value = new habit_value();
+                                new_value.id = reader.GetInt32(0);
+                                new_value.name = reader.GetString(3);
+                                try
+                                {
+                                    new_value.value = (reader.GetString(1));
+                                }
+                                catch (Exception)
+                                {
+                                    new_value.value = "";
+                                }
+
+                                habits_values.Add(new_value);
+                                habits_.Add(new_value.value);
+
+
+                            }
+
+                        }
+
+
+                    }
+                    try
+                    {
+                        habitsAtDates.Add(item.Date, habits_);
+                    }
+                    catch (Exception)
+                    {
+
+
+                    }
+
+                }
+            }
+
         }
 
         private void StoreDays(SqlConnection connection)
@@ -212,20 +216,5 @@ namespace WebApplication2603.Pages.days
         public string name;
         public string type;
     }
-    public class progresschecker
-    {
-        List<int> ids = new List<int>();
-        public  progresschecker(List<dayinfo> Days)
-        {
-            foreach (var item in Days)
-            {
-                ids.Add(item.id);
-            }
-        }
-        public int getprogress(int dayid,int habitid)
-        {
-
-            return 0;
-        }
-    }
+    
 }

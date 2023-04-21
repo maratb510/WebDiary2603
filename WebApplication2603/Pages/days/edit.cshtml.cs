@@ -145,10 +145,10 @@ namespace WebApplication2603.Pages.days
             //checkedids = Request.Form["AreChecked"];
             string id = Request.Query["id"];
             checked_ids= ","+Request.Form["AreChecked"]+",";
-            Console.WriteLine(checked_ids);
+            
             dayinfo.id = int.Parse(id);
             dayinfo.Date =( Request.Form["date"]);
-            Console.WriteLine(dayinfo.Date);
+            
             dayinfo.Note = Request.Form["note"];
 
             
